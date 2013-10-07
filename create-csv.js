@@ -9,15 +9,31 @@ csv = csv + nl;
 
 // get rest of data
 
+month_name_map = {
+    'Jan': 1,
+    'Feb': 2,
+    'Mar': 3,
+    'Apr': 4,
+    'May': 5,
+    'Jun': 6,
+    'Jul': 7,
+    'Aug': 8,
+    'Sep': 9,
+    'Oct': 10,
+    'Nov': 11,
+    'Dec': 12
+};
+
 // loop rows
 $('tbody tr', $table).slice(1, -1).each(function(){
     var row_cells = $('td', $(this));
-    csv = csv +  $('p', row_cells[0]).html().trim() + ' ' + year + ',';
-    csv = csv + $('p', row_cells[3]).html().trim() + ',';
+    var dt = $('p', row_cells[0]).html().trim().split(' ');
+    csv = csv + dt[0] + '/' +  month_name_map[dt[1]]  + '/' + year + ',';
+    csv = csv + $('p', row_cells[3]).html().trim().replace(/&nbsp;/g, '') + ',';
     if($('a', row_cells[2]).length) {
 	csv = csv + $('a', row_cells[2]).html().trim() + ',';
     } else {
-	csv = csv + $('p', row_cells[2]).html().trim() + ',';
+	csv = csv + $('p', row_cells[2]).html().trim();
     }
     csv = csv + nl;
 });
