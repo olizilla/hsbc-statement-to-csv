@@ -29,13 +29,14 @@ $('tbody tr', $table).slice(1, -1).each(function(){
     var row_cells = $('td', $(this));
     var dt = $('p', row_cells[0]).html().trim().split(' ');
     csv = csv + dt[0] + '/' +  month_name_map[dt[1]]  + '/' + year + ',';
-    csv = csv + $('p', row_cells[3]).html().trim().replace(/&nbsp;/g, '') + ',';
-    csv = csv + $(row_cells[2]).text().trim();
-    /* if($('a', row_cells[2]).length) {
-	csv = csv + $('a', row_cells[2]).html().trim() + ',';
+    var out = $('p', row_cells[3]).text().trim().replace(/&nbsp;/g, '');
+    var inn = $('p', row_cells[4]).text().trim().replace(/&nbsp;/g, '');
+    if (inn) {
+	csv = csv  + inn + ',';
     } else {
-	csv = csv + $('p', row_cells[2]).html().trim();
-    } */
+	csv = csv + '-' + out + ',';
+    }
+    csv = csv + $(row_cells[2]).text().trim();
     csv = csv + nl;
 });
 
