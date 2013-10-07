@@ -11,7 +11,7 @@ csv = csv + nl;
 
 // loop rows
 $('tbody tr', $table).each(function(){
-    var row_cells = $('td', $(this));
+    var row_cells = $('td', $(this)).slice(1, -1);
     csv = csv +  $('p', row_cells[0]).html().trim() + ' ' + year + ',';
     csv = csv + $('p', row_cells[3]).html().trim() + ',';
     if($('a', row_cells[2]).length) {
