@@ -36,7 +36,7 @@ $('tbody tr', $table).slice(1, -1).each(function(){
     } else {
 	csv = csv + '-' + out + ',';
     }
-    csv = csv + $(row_cells[2]).text().trim().replace(/,/g, '');
+    csv = csv + $(row_cells[2]).text().trim().replace(/,/g, ' ');
     csv = csv + nl;
 });
 
