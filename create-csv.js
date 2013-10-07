@@ -5,7 +5,7 @@ var statement_date = $('.extContentHighlightPib:eq(1) .extPibRow:eq(0) .hsbcText
 var year = statement_date.substr(statement_date.length-4);
 
 
-csv = csv + nl;
+csv = csv;
 
 // get rest of data
 
@@ -36,7 +36,7 @@ $('tbody tr', $table).slice(1, -1).each(function(){
     } else {
 	csv = csv + '-' + out + ',';
     }
-    csv = csv + $(row_cells[2]).text().trim();
+    csv = csv + $(row_cells[2]).text().trim().replace(/,/g, '');
     csv = csv + nl;
 });
 
