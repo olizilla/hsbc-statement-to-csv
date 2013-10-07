@@ -14,7 +14,11 @@ $('tbody tr', $table).each(function(){
     var row_cells = $('td', $(this));
     csv = csv +  $('p', row_cells[0]).html().trim() + ' ' + year + ',';
     csv = csv + $('p', row_cells[3]).html().trim() + ',';
-    csv = csv + $('a', row_cells[2]).html().trim() + ',';
+    if($('a', row_cells[2]).length) {
+	csv = csv + $('a', row_cells[2]).html().trim() + ',';
+    } else {
+	csv = csv + $('p', row_cells[2]).html().trim() + ',';
+    }
     csv = csv + nl;
 });
 
