@@ -10,8 +10,8 @@ csv = csv + nl;
 // get rest of data
 
 // loop rows
-$('tbody tr', $table).each(function(){
-    var row_cells = $('td', $(this)).slice(1, -1);
+$('tbody tr', $table).slice(1, -1).each(function(){
+    var row_cells = $('td', $(this));
     csv = csv +  $('p', row_cells[0]).html().trim() + ' ' + year + ',';
     csv = csv + $('p', row_cells[3]).html().trim() + ',';
     if($('a', row_cells[2]).length) {
