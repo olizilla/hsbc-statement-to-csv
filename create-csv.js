@@ -33,7 +33,7 @@ $('tbody tr', $table).slice(1, -1).each(function(){
     if($('a', row_cells[2]).length) {
 	csv = csv + $('a', row_cells[2]).html().trim() + ',';
     } else {
-	csv = csv + $('p', row_cells[2]).html().trim();
+	csv = csv + $('p', row_cells[2]).html().trim().text();
     }
     csv = csv + nl;
 });
