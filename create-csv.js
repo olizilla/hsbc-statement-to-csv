@@ -78,6 +78,11 @@ function processTable () {
 
 function makeCsv (data) {
     return data
+      .map(function (row) {
+          var date = row[0].day + '/' + row[0].month + '/' + row[0].year
+          row[0] = date
+          return row
+      })
       .map(function (row) { return row.join(',')})
       .join('\n')
 }
