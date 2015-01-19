@@ -1,47 +1,88 @@
-var csv = '';
-var nl = '\n';
-var $table = $('table:not(".extPibTable")');
 var statement_date = $('.extContentHighlightPib:eq(1) .extPibRow:eq(0) .hsbcTextRight').html();
-var year = statement_date.substr(statement_date.length-4);
+var statement_year = statement_date.substr(statement_date.length-4);
 
+function processMonth (monthName) {
+    month_name_map = {
+        'Jan': 1,
+        'Feb': 2,
+        'Mar': 3,
+        'Apr': 4,
+        'May': 5,
+        'Jun': 6,
+        'Jul': 7,
+        'Aug': 8,
+        'Sep': 9,
+        'Oct': 10,
+        'Nov': 11,
+        'Dec': 12
+    };
+    return month_name_map[monthName]
+}
 
-csv = csv;
-
-// get rest of data
-
-month_name_map = {
-    'Jan': 1,
-    'Feb': 2,
-    'Mar': 3,
-    'Apr': 4,
-    'May': 5,
-    'Jun': 6,
-    'Jul': 7,
-    'Aug': 8,
-    'Sep': 9,
-    'Oct': 10,
-    'Nov': 11,
-    'Dec': 12
-};
-
-// loop rows
-$('tbody tr', $table).slice(1, -1).each(function(){
-    var row_cells = $('td', $(this));
-    var dt = $('p', row_cells[0]).html().trim().split(' ');
-    csv = csv + dt[0] + '/' +  month_name_map[dt[1]]  + '/' + year + ',';
-    var out = $('p', row_cells[3]).text().trim().replace(/&nbsp;/g, '');
-    var inn = $('p', row_cells[4]).text().trim().replace(/&nbsp;/g, '');
-    if (inn) {
-	csv = csv  + inn + ',';
-    } else {
-	csv = csv + '-' + out + ',';
+// Pull the date out of the table.
+// Check the previous row to figure out when we've gone back a year
+function processDate (data, cell) {
+    var text = $('p', cell).html().trim().split(' ');
+    var date = {
+        day: text[0],
+        month: processMonth(text[1])
     }
-    csv = csv + $(row_cells[2]).text().trim().replace(/,/g, ' ');
-    csv = csv + nl;
-});
+    if (!data.length) {
+        date.year = statement_year
+    } else {
+        var prevDate = data[data.length - 1][0]
+        date.year = prevDate.year
 
-var data = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv);
+        // Have we flipped from jan to dec of previous year
+        if (prevDate.month < date.month) {
+            date.year = date.year - 1
+        }
+    }
+    return date
+}
 
-$('body').append('<a href="'+data+'" download="statement-'+(statement_date.replace(' ', '-'))+'.csv" id="download-statement" style="display: none;">Download</a>');
+// Pull out the payment name
+function processName (cell) {
+    return $(cell).text().trim().replace(/,/g, ' ')
+}
 
+// Figure out if it's money in or out of the account
+function processAmount (out_cell, in_cell) {
+    function extract (cell) {
+        return $('p', cell).text().trim().replace(/&nbsp;/g, '')
+    }
+    var moneyIn = extract(in_cell)
+    var moneyOut = '-' + extract(out_cell)
+    return moneyIn ? moneyIn : moneyOut
+}
+
+// Pull the interesting items from the tr gunk into an array
+function processRow (data, row) {
+    var res = [];
+    var row_cells = $('td', $(row));
+    res.push(processDate(data, row_cells[0]))
+    res.push(processAmount(row_cells[3], row_cells[4]))
+    res.push(processName(row_cells[2]))
+    return res
+}
+
+function processTable () {
+    var $table = $('table:not(".extPibTable")')
+    var table = $('tbody tr', $table).slice(1, -1).toArray()
+    var data = table.reverse().reduce(function(data, row) {
+        data.push(processRow(data, row))
+        return data
+    }, [])
+    return data.reverse()
+}
+
+function makeCsv (data) {
+    return data
+      .map(function (row) { return row.join(',')})
+      .join('\n')
+}
+
+var csv = makeCsv(processTable())
+var dataUri = 'dataUri:application/csv;charset=utf-8,' + encodeURIComponent(csv);
+$('body').append('<a href="'+dataUri+'" download="statement-'+(statement_date.replace(' ', '-'))+'.csv" id="download-statement" style="display: none;">Download</a>');
 $('#download-statement')[0].click();

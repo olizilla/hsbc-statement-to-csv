@@ -1,0 +1,30 @@
+{
+  "name": "hsbc-statement-to-csv",
+  "version": "1.0.0",
+  "description": "Download your HSBC bank statements as CSV",
+  "main": "create-csv.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "node tests/test-create-csv.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/olizilla/hsbc-statement-to-csv.git"
+  },
+  "keywords": [
+    "hsbc",
+    "csv"
+  ],
+  "author": "olizilla",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/olizilla/hsbc-statement-to-csv/issues"
+  },
+  "homepage": "https://github.com/olizilla/hsbc-statement-to-csv",
+  "devDependencies": {
+    "cheerio": "^0.18.0",
+    "tape": "^3.3.0"
+  }
+}
