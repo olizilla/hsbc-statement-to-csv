@@ -1,5 +1,4 @@
-var statement_date = $('.extContentHighlightPib:eq(1) .extPibRow:eq(0) .hsbcTextRight').html();
-var statement_year = statement_date.substr(statement_date.length-4);
+var $ = require('jquery')
 
 function processMonth (monthName) {
     month_name_map = {
@@ -28,7 +27,7 @@ function processDate (data, cell) {
         month: processMonth(text[1])
     }
     if (!data.length) {
-        date.year = statement_year
+        date.year = parseInt(findStatementDate().split(' ')[2])
     } else {
         var prevDate = data[data.length - 1][0]
         date.year = prevDate.year
@@ -66,8 +65,8 @@ function processRow (data, row) {
     return res
 }
 
-function processTable () {
-    var $table = $('table:not(".extPibTable")')
+function parseHtml () {
+    var $table = $('table').not('.extPibTable')
     var table = $('tbody tr', $table).slice(1, -1).toArray()
     var data = table.reverse().reduce(function(data, row) {
         data.push(processRow(data, row))
@@ -87,7 +86,32 @@ function makeCsv (data) {
       .join('\n')
 }
 
-var csv = makeCsv(processTable())
-var dataUri = 'dataUri:application/csv;charset=utf-8,' + encodeURIComponent(csv);
-$('body').append('<a href="'+dataUri+'" download="statement-'+(statement_date.replace(' ', '-'))+'.csv" id="download-statement" style="display: none;">Download</a>');
-$('#download-statement')[0].click();
+function findStatementDate () {
+    // e.g. 08 Jan 2015
+    //var date = $('.extContentHighlightPib:eq(1) .extPibRow:eq(0) .hsbcTextRight').html()
+    var date = $('#content .hsbcTextRight').first().html()
+    return date
+}
+
+function nameCsv (date) {
+    date.toLowerCase().replace(' ', '-')
+    return 'statement-' + date  + '.csv'
+}
+
+function triggerDownload (csv) {
+    var filename = nameCsv(findStatementDate())
+    var dataUri = 'dataUri:application/csv;charset=utf-8,' + encodeURIComponent(csv)
+    $('<a id="download-statement" style="display: none;">Download</a>')
+      .attr('href', dataUri)
+      .attr('download', filename)
+      .appendTo('body')
+      .click()
+}
+
+module.exports = function () {
+    var data = parseHtml()
+    var csv = makeCsv(data)
+    triggerDownload(csv)
+}
+module.exports.parseHtml = parseHtml
+module.exports.makeCsv = makeCsv
