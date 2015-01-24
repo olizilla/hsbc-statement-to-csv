@@ -1,7 +1,7 @@
 var $ = require('jquery')
 
-function processMonth (monthName) {
-    month_name_map = {
+function translateMonth (name) {
+    return {
         'Jan': 1,
         'Feb': 2,
         'Mar': 3,
@@ -14,17 +14,18 @@ function processMonth (monthName) {
         'Oct': 10,
         'Nov': 11,
         'Dec': 12
-    };
-    return month_name_map[monthName]
+    }[name]
 }
 
 // Pull the date out of the table.
-// Check the previous row to figure out when we've gone back a year
-function processDate (data, cell) {
+// Use the statement date for the first row.
+// After that, copy over the year from the previous row.
+// Check the months to figure out when we've gone back a year and update accordingly.
+function scrapePaymentDate (data, cell) {
     var text = $('p', cell).html().trim().split(' ');
     var date = {
         day: text[0],
-        month: processMonth(text[1])
+        month: translateMonth(text[1])
     }
     if (!data.length) {
         date.year = parseInt(findStatementDate().split(' ')[2])
@@ -41,12 +42,12 @@ function processDate (data, cell) {
 }
 
 // Pull out the payment name
-function processName (cell) {
+function scrapePaymentName (cell) {
     return $(cell).text().trim().replace(/,/g, ' ')
 }
 
 // Figure out if it's money in or out of the account
-function processAmount (out_cell, in_cell) {
+function scrapePaymentAmount (out_cell, in_cell) {
     function extract (cell) {
         return $('p', cell).text().trim().replace(/&nbsp;/g, '')
     }
@@ -56,25 +57,27 @@ function processAmount (out_cell, in_cell) {
 }
 
 // Pull the interesting items from the tr gunk into an array
-function processRow (data, row) {
+function scrapeRow (data, row) {
     var res = [];
     var row_cells = $('td', $(row));
-    res.push(processDate(data, row_cells[0]))
-    res.push(processAmount(row_cells[3], row_cells[4]))
-    res.push(processName(row_cells[2]))
+    res.push(scrapePaymentDate(data, row_cells[0]))
+    res.push(scrapePaymentAmount(row_cells[3], row_cells[4]))
+    res.push(scrapePaymentName(row_cells[2]))
     return res
 }
 
-function parseHtml () {
+// Translate the table into data we can work with. A 2D array.
+function scrapeHtml () {
     var $table = $('table').not('.extPibTable')
     var table = $('tbody tr', $table).slice(1, -1).toArray()
     var data = table.reverse().reduce(function(data, row) {
-        data.push(processRow(data, row))
+        data.push(scrapeRow(data, row))
         return data
     }, [])
     return data.reverse()
 }
 
+// Flatten the 2d array, comma separate the items, new line delimit the rows.
 function makeCsv (data) {
     return data
       .map(function (row) {
@@ -86,9 +89,9 @@ function makeCsv (data) {
       .join('\n')
 }
 
+// Occurs once in the page... the only thing we can use to deduce the year of payments from...
 function findStatementDate () {
     // e.g. 08 Jan 2015
-    //var date = $('.extContentHighlightPib:eq(1) .extPibRow:eq(0) .hsbcTextRight').html()
     var date = $('#content .hsbcTextRight').first().html()
     return date
 }
@@ -98,6 +101,7 @@ function nameCsv (date) {
     return 'statement-' + date  + '.csv'
 }
 
+// drop a download link with the csv encoded as a dataUri, and click it.
 function triggerDownload (csv) {
     var filename = nameCsv(findStatementDate())
     var dataUri = 'dataUri:application/csv;charset=utf-8,' + encodeURIComponent(csv)
@@ -109,9 +113,9 @@ function triggerDownload (csv) {
 }
 
 module.exports = function () {
-    var data = parseHtml()
+    var data = scrapeHtml()
     var csv = makeCsv(data)
     triggerDownload(csv)
 }
-module.exports.parseHtml = parseHtml
+module.exports.scrapeHtml = scrapeHtml
 module.exports.makeCsv = makeCsv
