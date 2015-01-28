@@ -1,11 +1,9 @@
 var $ = require('jquery')
 
 module.exports = function () {
-  console.log('we are here')
   var data = scrapeHtml()
   var csv = makeCsv(data)
   triggerDownload(csv)
-  console.log('we are done')
 }
 module.exports.scrapeHtml = scrapeHtml
 module.exports.makeCsv = makeCsv
