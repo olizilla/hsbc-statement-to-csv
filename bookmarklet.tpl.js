@@ -1,5 +1,9 @@
 function loadScript (url) {
   var d = document
-  d.body.appendChild(d.createElement('script')).src = url
+  var s = d.createElement('script')
+  s.onload(function () {
+    require('hsbc-statement-to-csv')()
+  })
+  d.body.appendChild(s).src = url
 }
 loadScript('https://rawgit.com/olizilla/hsbc-statement-to-csv/master/dist/hsbc-statement-to-csv.min.js')

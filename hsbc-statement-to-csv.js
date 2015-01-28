@@ -1,9 +1,11 @@
 var $ = require('jquery')
 
 module.exports = function () {
+  console.log('we are here')
   var data = scrapeHtml()
   var csv = makeCsv(data)
   triggerDownload(csv)
+  console.log('we are done')
 }
 module.exports.scrapeHtml = scrapeHtml
 module.exports.makeCsv = makeCsv
@@ -44,7 +46,7 @@ function triggerDownload (csv) {
   $('<a id="download-statement" style="display: none;">Download</a>')
     .attr('href', dataUri)
     .attr('download', filename)
-    .appendTo('body')
+    .appendTo(document.body)
     .click()
 }
 

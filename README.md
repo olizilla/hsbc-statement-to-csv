@@ -9,7 +9,7 @@ How about a bookmarklet that'll dig the data out of an online statement page and
 Create a new bookmark in your browser and set the url to be:
 
 ```html
-javascript:(function(){;function%20loadScript(url)%7Bvar%20d=document;d.body.appendChild(d.createElement(%22script%22)).src=url%7DloadScript(%22https://rawgit.com/olizilla/hsbc-statement-to-csv/master/dist/hsbc-statement-to-csv.min.js%22);})()
+javascript:(function(){;function%20loadScript(url)%7Bvar%20d=document;var%20s=d.createElement(%22script%22);s.onload(function()%7Brequire(%22hsbc-statement-to-csv%22)()%7D);d.body.appendChild(s).src=url%7DloadScript(%22https://rawgit.com/olizilla/hsbc-statement-to-csv/master/dist/hsbc-statement-to-csv.min.js%22);})()
 ```
 
 Log into your HBSC online banking account, open a previous statement, and click the bookmark.
