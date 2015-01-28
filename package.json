@@ -1,6 +1,6 @@
 {
   "name": "hsbc-statement-to-csv",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Download your HSBC bank statements as CSV",
   "main": "hsbc-statement-to-csv.js",
   "directories": {
