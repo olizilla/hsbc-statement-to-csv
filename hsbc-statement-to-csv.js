@@ -42,12 +42,16 @@ function makeCsv (data) {
 // Add a download link with the csv encoded as a dataUri, and click it.
 function triggerDownload (csv) {
   var filename = nameCsv(findStatementDate())
-  var dataUri = 'dataUri:application/csv;charset=utf-8,' + encodeURIComponent(csv)
+  var dataUri = 'data:application/csv;charset=utf-8,' + encodeURIComponent(csv)
   $('<a id="download-statement" style="display: none;">Download</a>')
     .attr('href', dataUri)
     .attr('download', filename)
     .appendTo(document.body)
+    .get(0)
     .click()
+  //var link = $('<a href="'+dataUri+'" download="'+filename+'" id="download-statement" style="display: none;">Download</a>')
+  //$('body').append(link)
+  //$('#download-statement')[0].click()
 }
 
 // Pull the interesting items from the tr gunk into an array
@@ -108,8 +112,7 @@ function dateFormat (date) {
 }
 
 function nameCsv (date) {
-  date.toLowerCase().replace(' ', '-')
-  return 'statement-' + date + '.csv'
+  return 'statement-' + date.toLowerCase().replace(/ /g, '-') + '.csv'
 }
 
 function translateMonth (name) {
