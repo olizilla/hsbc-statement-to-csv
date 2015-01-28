@@ -1,0 +1,1 @@
+javascript:(function(){;function%20loadScript(url)%7Bvar%20d=document;d.body.appendChild(d.createElement(%22script%22)).src=url%7DloadScript(%22https://rawgit.com/olizilla/hsbc-statement-to-csv/dist/hsbc-statement-to-csv.min.js%22);})()
